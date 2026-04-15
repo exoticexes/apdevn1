@@ -16,7 +16,7 @@ export default function Login() {
     setError('')
 
     if (!email || !password) {
-      setError('Lutfen tum alanlari doldurun.')
+      setError('Lütfen tüm alanları doldurun.')
       return
     }
 
@@ -39,8 +39,8 @@ export default function Login() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-fuchsia-600 rounded-2xl mb-4">
               <LogIn className="text-white" size={28} />
             </div>
-            <h1 className="text-3xl font-black text-white">Giris Yap</h1>
-            <p className="text-gray-500 font-bold text-sm mt-2">Epinfy hesabiniza giris yapin</p>
+            <h1 className="text-3xl font-black text-white">Giriş Yap</h1>
+            <p className="text-gray-500 font-bold text-sm mt-2">Epinfy hesabınıza giriş yapın</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -52,14 +52,14 @@ export default function Login() {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ornek@email.com"
+                  placeholder="örnek@email.com"
                   className="w-full bg-gray-800/50 border border-purple-900/30 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 font-bold text-sm transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-extrabold text-purple-400 mb-2">Sifre</label>
+              <label className="block text-sm font-extrabold text-purple-400 mb-2">Şifre</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                 <input
@@ -82,14 +82,14 @@ export default function Login() {
               type="submit"
               className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white py-3 rounded-xl font-extrabold text-sm transition-all active:scale-98"
             >
-              Giris Yap
+              Giriş Yap
             </button>
           </form>
 
           <p className="text-center text-gray-500 text-sm font-bold mt-6">
-            Hesabiniz yok mu?{' '}
+            Hesabınız yok mu?{' '}
             <Link to="/register" className="text-purple-400 hover:text-purple-300 transition-colors">
-              Kayit Ol
+              Kayıt Ol
             </Link>
           </p>
         </div>

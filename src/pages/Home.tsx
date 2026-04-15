@@ -11,7 +11,7 @@ const products = [
     name: 'PUBG Mobile 660 UC',
     price: 109.90,
     image: 'https://placehold.co/800x400/1a1a2e/7c3aed?text=PUBG+660+UC&font=roboto',
-    description: 'PUBG Mobile 660 UC - Aninda hesabiniza tanimlanir.',
+    description: 'PUBG Mobile 660 UC - Anında hesabınıza tanımlanır.',
     featured: true,
   },
   {
@@ -19,7 +19,7 @@ const products = [
     name: 'Valorant 1000 VP',
     price: 179.90,
     image: 'https://placehold.co/400x300/1a1a2e/7c3aed?text=Valorant+1000+VP&font=roboto',
-    description: 'Valorant Points - Hemen kullanima hazir.',
+    description: 'Valorant Points - Hemen kullanıma hazır.',
     featured: false,
   },
   {
@@ -27,7 +27,7 @@ const products = [
     name: 'Steam 50 TL',
     price: 50.00,
     image: 'https://placehold.co/400x300/1a1a2e/7c3aed?text=Steam+50+TL&font=roboto',
-    description: 'Steam Cuzdan Kodu - Turkiye bolgesine ozel.',
+    description: 'Steam Cüzdan Kodu - Türkiye bölgesine özel.',
     featured: false,
   },
   {
@@ -35,7 +35,7 @@ const products = [
     name: 'Spotify Premium 1 Ay',
     price: 59.99,
     image: 'https://placehold.co/400x300/1a1a2e/7c3aed?text=Spotify+Premium&font=roboto',
-    description: 'Spotify Premium bireysel uyelik - 1 aylik.',
+    description: 'Spotify Premium bireysel üyelik - 1 aylık.',
     featured: false,
   },
   {
@@ -43,7 +43,7 @@ const products = [
     name: 'Netflix Hediye Karti 100 TL',
     price: 100.00,
     image: 'https://placehold.co/400x300/1a1a2e/7c3aed?text=Netflix+100+TL&font=roboto',
-    description: 'Netflix hediye karti - Turkiye hesaplari icin.',
+    description: 'Netflix hediye kartı - Türkiye hesapları için.',
     featured: false,
   },
   {
@@ -51,7 +51,7 @@ const products = [
     name: 'PUBG Mobile 325 UC',
     price: 59.90,
     image: 'https://placehold.co/400x300/1a1a2e/7c3aed?text=PUBG+325+UC&font=roboto',
-    description: 'PUBG Mobile 325 UC - Hizli ve guvenli.',
+    description: 'PUBG Mobile 325 UC - Hızlı ve güvenli.',
     featured: false,
   },
   {
@@ -59,7 +59,7 @@ const products = [
     name: 'Razer Gold 100 TL',
     price: 100.00,
     image: 'https://placehold.co/400x300/1a1a2e/7c3aed?text=Razer+Gold+100+TL&font=roboto',
-    description: 'Razer Gold Pin - Tum oyunlarda gecerli.',
+    description: 'Razer Gold Pin - Tüm oyunlarda geçerli.',
     featured: false,
   },
 ]
@@ -89,7 +89,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Toast
-        message="Sepete eklemek icin once kayit olmaniz gerekiyor! Yonlendiriliyorsunuz..."
+        message="Sepete eklemek için önce kayıt olmanız gerekiyor! Yönlendiriliyorsunuz..."
         type="warning"
         isVisible={showToast}
         onClose={() => setShowToast(false)}
@@ -102,13 +102,13 @@ export default function Home() {
           <div className="text-center mb-12">
             <h1 className="text-5xl md:text-6xl font-black mb-4">
               <span className="bg-gradient-to-r from-purple-400 via-fuchsia-400 to-purple-300 bg-clip-text text-transparent">
-                Oyun Kodlarin
+                Oyun Kodların
               </span>
               <br />
-              <span className="text-white">Bir Tik Uzaginda</span>
+              <span className="text-white">Bir Tık Uzağında</span>
             </h1>
             <p className="text-gray-400 text-lg font-bold max-w-2xl mx-auto">
-              PUBG UC, Valorant VP, Steam ve daha fazlasi. Aninda teslimat, en uygun fiyatlar.
+              PUBG UC, Valorant VP, Steam ve daha fazlası. Anında teslimat, en uygun fiyatlar.
             </p>
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function Home() {
       {/* Products Grid */}
       <section className="max-w-7xl mx-auto px-4 pb-16">
         <h2 className="text-3xl font-black text-white mb-8">
-          Populer <span className="bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">Urunler</span>
+          Popüler <span className="bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">Ürünler</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map(product => (

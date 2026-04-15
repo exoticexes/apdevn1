@@ -23,8 +23,8 @@ export default function Cart() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <ShoppingBag className="mx-auto text-gray-700 mb-4" size={64} />
-          <h2 className="text-2xl font-black text-white mb-2">Sepetiniz Bos</h2>
-          <p className="text-gray-500 font-bold">Urunlere goz atin ve sepetinize ekleyin.</p>
+          <h2 className="text-2xl font-black text-white mb-2">Sepetiniz Boş</h2>
+          <p className="text-gray-500 font-bold">Ürünlere göz atın ve sepetinize ekleyin.</p>
         </div>
       </div>
     )
@@ -34,7 +34,7 @@ export default function Cart() {
     <div className="min-h-screen max-w-4xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-black text-white mb-8">
         Sepetim{' '}
-        <span className="text-gray-500 text-lg font-bold">({items.length} urun)</span>
+        <span className="text-gray-500 text-lg font-bold">({items.length} ürün)</span>
       </h1>
 
       <div className="space-y-4 mb-8">
@@ -75,10 +75,10 @@ export default function Cart() {
           <div className="flex items-start gap-4">
             <AlertTriangle className="text-red-500 flex-shrink-0 mt-0.5" size={28} />
             <div>
-              <h3 className="text-red-400 font-black text-lg mb-1">Islem Basarisiz!</h3>
+              <h3 className="text-red-400 font-black text-lg mb-1">İşlem Başarısız!</h3>
               <p className="text-red-300 font-bold text-sm">
-                Hatali hesap bilgisi veya sistem hatasi. Lutfen daha sonra tekrar deneyin
-                veya farkli bir odeme yontemi kullanin.
+                                Hatalı hesap bilgisi veya sistem hatası. Lütfen daha sonra tekrar deneyin
+                                veya farklı bir ödeme yöntemi kullanın.
               </p>
             </div>
           </div>
@@ -97,7 +97,7 @@ export default function Cart() {
         {/* Payment Form */}
         <div className="space-y-4 mb-6">
           <div>
-            <label className="block text-sm font-extrabold text-purple-400 mb-2">Kart Numarasi</label>
+            <label className="block text-sm font-extrabold text-purple-400 mb-2">Kart Numarası</label>
             <input
               type="text"
               placeholder="1234 5678 9012 3456"
@@ -107,7 +107,7 @@ export default function Cart() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-extrabold text-purple-400 mb-2">Son Kullanim</label>
+              <label className="block text-sm font-extrabold text-purple-400 mb-2">Son Kullanım</label>
               <input
                 type="text"
                 placeholder="AA/YY"
@@ -135,12 +135,12 @@ export default function Cart() {
           {processing ? (
             <>
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Isleniyor...
+              İşleniyor...
             </>
           ) : (
             <>
               <CreditCard size={20} />
-              Odemeyi Tamamla
+              Ödemeyi Tamamla
             </>
           )}
         </button>

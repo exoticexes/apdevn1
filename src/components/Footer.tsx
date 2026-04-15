@@ -8,28 +8,28 @@ export default function Footer() {
               EPINFY
             </h3>
             <p className="text-gray-500 text-sm font-bold">
-              Guvenilir e-pin platformu. Aninda teslimat, uygun fiyatlar.
+              Güvenilir e-pin platformu. Anında teslimat, uygun fiyatlar.
             </p>
           </div>
           <div>
-            <h4 className="text-white font-extrabold mb-3">Hizli Linkler</h4>
+            <h4 className="text-white font-extrabold mb-3">Hızlı Linkler</h4>
             <ul className="space-y-2 text-gray-500 text-sm font-bold">
-              <li>Hakkimizda</li>
+              <li>Hakkımızda</li>
               <li>SSS</li>
-              <li>Iletisim</li>
+              <li>İletişim</li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-extrabold mb-3">Destek</h4>
             <ul className="space-y-2 text-gray-500 text-sm font-bold">
               <li>destek@epinfy.com</li>
-              <li>Canli Destek</li>
-              <li>Kullanim Sartlari</li>
+              <li>Canlı Destek</li>
+              <li>Kullanım Şartları</li>
             </ul>
           </div>
         </div>
         <div className="border-t border-purple-900/30 mt-6 pt-6 text-center text-gray-600 text-xs font-bold">
-          &copy; 2026 Epinfy - Tum haklari saklidir. (Bu bir UX test prototipidir)
+          &copy; 2026 Epinfy - Tüm hakları saklıdır. (Bu bir UX test prototipidir)
         </div>
       </div>
     </footer>

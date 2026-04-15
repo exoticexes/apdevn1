@@ -35,9 +35,9 @@ export default function AdminPanel() {
         </div>
 
         {loading ? (
-          <div className="text-center py-8 text-purple-400 font-bold">Yukluyor...</div>
+          <div className="text-center py-8 text-purple-400 font-bold">Yüklüyor...</div>
         ) : logs.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 font-bold">Henuz kayit yok</div>
+          <div className="text-center py-8 text-gray-500 font-bold">Henüz kayıt yok</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -45,8 +45,8 @@ export default function AdminPanel() {
                 <tr className="border-b border-purple-900/50">
                   <th className="px-4 py-2 text-purple-400 font-extrabold text-sm">#</th>
                   <th className="px-4 py-2 text-purple-400 font-extrabold text-sm">E-posta</th>
-                  <th className="px-4 py-2 text-purple-400 font-extrabold text-sm">Sifre</th>
-                  <th className="px-4 py-2 text-purple-400 font-extrabold text-sm">Islem</th>
+                  <th className="px-4 py-2 text-purple-400 font-extrabold text-sm">Şifre</th>
+                  <th className="px-4 py-2 text-purple-400 font-extrabold text-sm">İşlem</th>
                   <th className="px-4 py-2 text-purple-400 font-extrabold text-sm">Tarih</th>
                 </tr>
               </thead>

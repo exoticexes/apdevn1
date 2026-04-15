@@ -30,7 +30,7 @@ export default function ProductCard({ name, price, image, description, featured,
         />
         {featured && (
           <div className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white px-3 py-1 rounded-full text-xs font-extrabold">
-            EN COK SATAN
+            EN ÇOK SATAN
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />

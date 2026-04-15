@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ShoppingCart, User, LogOut } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Shield } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 
@@ -11,7 +11,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50">
       {/* Campaign Banner */}
       <div className="bg-gradient-to-r from-purple-700 via-purple-500 to-fuchsia-500 text-white text-center py-2 text-sm font-extrabold tracking-wide">
-        🎁 Yeni uyelere 360 UC Bedava! 🎁
+        🎁 Yeni üyelere 360 UC Bedava! 🎁
       </div>
 
       {/* Main Navbar */}
@@ -42,6 +42,15 @@ export default function Navbar() {
                     )}
                   </Link>
                   <div className="flex items-center gap-3">
+                    {user?.isAdmin && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white"
+                      >
+                        <Shield size={14} />
+                        Admin Panel
+                      </Link>
+                    )}
                     <span className="text-purple-300 text-sm font-bold">{user?.email}</span>
                     <button onClick={logout} className="text-gray-400 hover:text-red-400 transition-colors">
                       <LogOut size={20} />
@@ -54,8 +63,8 @@ export default function Navbar() {
                   className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white px-4 py-2 rounded-lg transition-all font-extrabold text-sm"
                 >
                   <User size={18} />
-                  Giris Yap
-                </Link>
+                                  Giriş Yap
+                                </Link>
               )}
             </div>
           </div>
