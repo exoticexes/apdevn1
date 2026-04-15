@@ -18,7 +18,7 @@ export default function Cart() {
     }, 2000)
   }
 
-  if (items.length === 0 && !showError) {
+  if (items.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

@@ -20,7 +20,11 @@ const localLogs: TestLog[] = []
 
 export async function insertTestLog(log: Omit<TestLog, 'id' | 'created_at'>): Promise<void> {
   if (supabase) {
-    await supabase.from('test_logs').insert([log])
+    const { error } = await supabase.from('test_logs').insert([log])
+    if (error) {
+      console.error('Supabase insert error:', error)
+      localLogs.push({ ...log, id: localLogs.length + 1, created_at: new Date().toISOString() })
+    }
   } else {
     localLogs.push({ ...log, id: localLogs.length + 1, created_at: new Date().toISOString() })
   }
