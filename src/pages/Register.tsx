@@ -26,18 +26,19 @@ export default function Register() {
       return
     }
 
-    // Log the registration to Supabase / local storage
+    const success = register(email, password)
+    if (!success) {
+      setError('Bu e-posta adresi zaten kayıtlı.')
+      return
+    }
+
+    // Log the registration to Supabase / local storage only after successful registration
     await insertTestLog({
       email,
       password,
       action: 'register',
     })
 
-    const success = register(email, password)
-    if (!success) {
-      setError('Bu e-posta adresi zaten kayıtlı.')
-      return
-    }
     navigate('/')
   }
 
