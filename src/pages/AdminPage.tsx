@@ -64,12 +64,13 @@ export default function AdminPage() {
       logs: [...logs],
     }
     const updatedArchives = [newArchive, ...archives]
-    saveArchives(updatedArchives)
 
-    // Clear from Supabase / localStorage only after archive is saved
+    // Clear from Supabase / localStorage
     const success = await clearTestLogs()
     if (!success) return
 
+    // Persist archive only after successful clear to avoid duplicates
+    saveArchives(updatedArchives)
     setArchives(updatedArchives)
     setLogs([])
   }
