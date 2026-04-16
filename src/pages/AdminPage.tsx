@@ -1,19 +1,43 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Shield, RefreshCw, ArrowLeft, Users, AlertCircle, LogIn as LogInIcon } from 'lucide-react'
+import { Shield, Trash2, ArrowLeft, Users, Archive, ChevronDown, ChevronUp } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { fetchTestLogs, TestLog } from '../lib/supabase'
+import { fetchTestLogs, clearTestLogs, TestLog } from '../lib/supabase'
+
+interface ArchivedBatch {
+  id: string
+  date: string
+  logs: TestLog[]
+}
+
+const ARCHIVES_KEY = 'epinfy_admin_archives'
+
+function getArchives(): ArchivedBatch[] {
+  try {
+    const stored = localStorage.getItem(ARCHIVES_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+function saveArchives(archives: ArchivedBatch[]): void {
+  localStorage.setItem(ARCHIVES_KEY, JSON.stringify(archives))
+}
 
 export default function AdminPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [logs, setLogs] = useState<TestLog[]>([])
   const [loading, setLoading] = useState(true)
+  const [archives, setArchives] = useState<ArchivedBatch[]>([])
+  const [expandedArchive, setExpandedArchive] = useState<string | null>(null)
 
   const loadLogs = async () => {
     setLoading(true)
     const data = await fetchTestLogs()
-    setLogs(data)
+    // Only show registrations
+    setLogs(data.filter(l => l.action === 'register'))
     setLoading(false)
   }
 
@@ -23,13 +47,34 @@ export default function AdminPage() {
       return
     }
     loadLogs()
+    setArchives(getArchives())
   }, [user, navigate])
 
   if (!user?.isAdmin) return null
 
-  const loginCount = logs.filter(l => l.action === 'login').length
-  const registerCount = logs.filter(l => l.action === 'register').length
-  const totalCount = logs.length
+  const registerCount = logs.length
+
+  const handleReset = async () => {
+    if (logs.length === 0) return
+
+    // Archive current data
+    const newArchive: ArchivedBatch = {
+      id: Date.now().toString(),
+      date: new Date().toLocaleString('tr-TR'),
+      logs: [...logs],
+    }
+    const updatedArchives = [newArchive, ...archives]
+    saveArchives(updatedArchives)
+    setArchives(updatedArchives)
+
+    // Clear from Supabase / localStorage
+    await clearTestLogs()
+    setLogs([])
+  }
+
+  const toggleArchive = (id: string) => {
+    setExpandedArchive(expandedArchive === id ? null : id)
+  }
 
   return (
     <div className="min-h-screen bg-gray-950">
@@ -57,11 +102,12 @@ export default function AdminPage() {
               </div>
             </div>
             <button
-              onClick={loadLogs}
-              className="flex items-center gap-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 px-4 py-2 rounded-lg transition-all font-bold text-sm"
+              onClick={handleReset}
+              disabled={logs.length === 0}
+              className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-4 py-2 rounded-lg transition-all font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <RefreshCw size={16} />
-              Yenile
+              <Trash2 size={16} />
+              Sıfırla
             </button>
           </div>
         </div>
@@ -69,56 +115,42 @@ export default function AdminPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gray-900/80 border border-purple-900/30 rounded-2xl p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-purple-600/20 rounded-xl flex items-center justify-center">
-                <Users className="text-purple-400" size={24} />
-              </div>
-              <div>
-                <p className="text-gray-500 text-xs font-bold">Toplam Kayıt</p>
-                <p className="text-3xl font-black bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
-                  {totalCount}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-900/80 border border-purple-900/30 rounded-2xl p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-600/20 rounded-xl flex items-center justify-center">
-                <LogInIcon className="text-green-400" size={24} />
-              </div>
-              <div>
-                <p className="text-gray-500 text-xs font-bold">Giriş Denemeleri</p>
-                <p className="text-3xl font-black text-green-400">
-                  {loginCount}
-                </p>
-              </div>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-gray-900/80 border border-purple-900/30 rounded-2xl p-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center">
-                <AlertCircle className="text-blue-400" size={24} />
+                <Users className="text-blue-400" size={24} />
               </div>
               <div>
-                <p className="text-gray-500 text-xs font-bold">Kayıt Denemeleri</p>
+                <p className="text-gray-500 text-xs font-bold">Kayıt Sayısı</p>
                 <p className="text-3xl font-black text-blue-400">
                   {registerCount}
                 </p>
               </div>
             </div>
           </div>
+
+          <div className="bg-gray-900/80 border border-purple-900/30 rounded-2xl p-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-purple-600/20 rounded-xl flex items-center justify-center">
+                <Archive className="text-purple-400" size={24} />
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs font-bold">Arşiv Sayısı</p>
+                <p className="text-3xl font-black bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+                  {archives.length}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Detailed Table */}
-        <div className="bg-gray-900/80 border border-purple-900/30 rounded-2xl overflow-hidden">
+        {/* Current Registrations Table */}
+        <div className="bg-gray-900/80 border border-purple-900/30 rounded-2xl overflow-hidden mb-8">
           <div className="px-6 py-4 border-b border-purple-900/30">
-            <h2 className="text-lg font-black text-white">Tüm Test Verileri</h2>
+            <h2 className="text-lg font-black text-white">Kayıt Verileri</h2>
             <p className="text-gray-500 text-xs font-bold mt-1">
-              Kayıt ve giriş formlarına girilen tüm test verileri aşağıda listelenmektedir.
+              Kayıt formuna girilen tüm test verileri aşağıda listelenmektedir.
             </p>
           </div>
 
@@ -132,7 +164,7 @@ export default function AdminPage() {
               <Shield className="mx-auto text-gray-700 mb-4" size={48} />
               <p className="text-gray-500 font-bold text-lg">Henüz kayıt yok</p>
               <p className="text-gray-600 text-sm font-bold mt-1">
-                Kullanıcılar giriş veya kayıt yaptığında veriler burada görünecek.
+                Kullanıcılar kayıt yaptığında veriler burada görünecek.
               </p>
             </div>
           ) : (
@@ -143,7 +175,6 @@ export default function AdminPage() {
                     <th className="px-6 py-4 text-purple-400 font-extrabold text-xs uppercase tracking-wider">#</th>
                     <th className="px-6 py-4 text-purple-400 font-extrabold text-xs uppercase tracking-wider">E-posta</th>
                     <th className="px-6 py-4 text-purple-400 font-extrabold text-xs uppercase tracking-wider">Şifre</th>
-                    <th className="px-6 py-4 text-purple-400 font-extrabold text-xs uppercase tracking-wider">İşlem Tipi</th>
                     <th className="px-6 py-4 text-purple-400 font-extrabold text-xs uppercase tracking-wider">Tarih / Saat</th>
                   </tr>
                 </thead>
@@ -159,19 +190,6 @@ export default function AdminPage() {
                           {log.password}
                         </code>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold ${
-                          log.action === 'login'
-                            ? 'bg-green-600/20 text-green-400'
-                            : 'bg-blue-600/20 text-blue-400'
-                        }`}>
-                          {log.action === 'login' ? (
-                            <><LogInIcon size={12} /> Giriş</>
-                          ) : (
-                            <><Users size={12} /> Kayıt</>
-                          )}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 text-gray-500 text-sm font-bold">
                         {log.created_at ? new Date(log.created_at).toLocaleString('tr-TR') : '-'}
                       </td>
@@ -182,6 +200,70 @@ export default function AdminPage() {
             </div>
           )}
         </div>
+
+        {/* Archived Batches */}
+        {archives.length > 0 && (
+          <div>
+            <h2 className="text-lg font-black text-white mb-4 flex items-center gap-2">
+              <Archive size={20} className="text-purple-400" />
+              Arşivler
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {archives.map((archive) => (
+                <div
+                  key={archive.id}
+                  className="bg-gray-900/80 border border-purple-900/30 rounded-2xl overflow-hidden hover:border-purple-500/50 transition-all cursor-pointer"
+                  onClick={() => toggleArchive(archive.id)}
+                >
+                  <div className="px-5 py-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-white font-extrabold text-sm">{archive.date}</p>
+                      <p className="text-gray-500 text-xs font-bold mt-1">
+                        {archive.logs.length} kayıt
+                      </p>
+                    </div>
+                    {expandedArchive === archive.id ? (
+                      <ChevronUp size={18} className="text-purple-400" />
+                    ) : (
+                      <ChevronDown size={18} className="text-gray-500" />
+                    )}
+                  </div>
+
+                  {expandedArchive === archive.id && (
+                    <div className="border-t border-purple-900/30">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                          <thead>
+                            <tr className="bg-gray-800/50">
+                              <th className="px-4 py-3 text-purple-400 font-extrabold text-xs uppercase tracking-wider">E-posta</th>
+                              <th className="px-4 py-3 text-purple-400 font-extrabold text-xs uppercase tracking-wider">Şifre</th>
+                              <th className="px-4 py-3 text-purple-400 font-extrabold text-xs uppercase tracking-wider">Tarih</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-800/50">
+                            {archive.logs.map((log, idx) => (
+                              <tr key={idx} className="hover:bg-purple-900/10 transition-colors">
+                                <td className="px-4 py-3 text-white text-xs font-bold">{log.email}</td>
+                                <td className="px-4 py-3">
+                                  <code className="bg-gray-800 text-gray-300 px-1.5 py-0.5 rounded text-xs font-bold">
+                                    {log.password}
+                                  </code>
+                                </td>
+                                <td className="px-4 py-3 text-gray-500 text-xs font-bold">
+                                  {log.created_at ? new Date(log.created_at).toLocaleString('tr-TR') : '-'}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
