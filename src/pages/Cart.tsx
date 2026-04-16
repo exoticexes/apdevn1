@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Trash2, ShoppingBag, AlertTriangle, CreditCard, Tag, CheckCircle, AlertCircle } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 
@@ -10,6 +10,13 @@ export default function Cart() {
   const [couponCode, setCouponCode] = useState('')
   const [couponApplied, setCouponApplied] = useState(false)
   const [couponError, setCouponError] = useState(false)
+  const checkoutTimerRef = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => {
+    return () => {
+      if (checkoutTimerRef.current) clearTimeout(checkoutTimerRef.current)
+    }
+  }, [])
 
   const VALID_COUPON = 'UC360'
   const effectiveTotal = couponApplied ? 0 : totalPrice
@@ -30,7 +37,8 @@ export default function Cart() {
     setShowError(false)
 
     // Simulate processing delay then always fail
-    setTimeout(() => {
+    if (checkoutTimerRef.current) clearTimeout(checkoutTimerRef.current)
+    checkoutTimerRef.current = setTimeout(() => {
       setProcessing(false)
       setShowError(true)
     }, 2000)
