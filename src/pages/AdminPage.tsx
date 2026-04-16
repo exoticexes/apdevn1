@@ -57,7 +57,11 @@ export default function AdminPage() {
   const handleReset = async () => {
     if (logs.length === 0) return
 
-    // Archive current data
+    // Clear from Supabase / localStorage first
+    const success = await clearTestLogs()
+    if (!success) return
+
+    // Archive current data only after successful clear
     const newArchive: ArchivedBatch = {
       id: Date.now().toString(),
       date: new Date().toLocaleString('tr-TR'),
@@ -66,9 +70,6 @@ export default function AdminPage() {
     const updatedArchives = [newArchive, ...archives]
     saveArchives(updatedArchives)
     setArchives(updatedArchives)
-
-    // Clear from Supabase / localStorage
-    await clearTestLogs()
     setLogs([])
   }
 

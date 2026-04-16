@@ -47,16 +47,18 @@ export async function insertTestLog(log: Omit<TestLog, 'id' | 'created_at'>): Pr
   }
 }
 
-export async function clearTestLogs(): Promise<void> {
+export async function clearTestLogs(): Promise<boolean> {
   if (supabase) {
     const { error } = await supabase.from('test_logs').delete().neq('id', 0)
     if (error) {
       console.error('Supabase delete error:', error)
+      return false
     }
     saveLocalLogs([])
-  } else {
-    saveLocalLogs([])
+    return true
   }
+  saveLocalLogs([])
+  return true
 }
 
 export async function fetchTestLogs(): Promise<TestLog[]> {
