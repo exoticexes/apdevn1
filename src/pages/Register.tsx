@@ -33,7 +33,11 @@ export default function Register() {
       action: 'register',
     })
 
-    register(email, password)
+    const success = register(email, password)
+    if (!success) {
+      setError('Bu e-posta adresi zaten kayıtlı.')
+      return
+    }
     navigate('/')
   }
 

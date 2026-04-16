@@ -27,7 +27,11 @@ export default function Login() {
       action: 'login',
     })
 
-    login(email, password)
+    const success = login(email, password)
+    if (!success) {
+      setError('E-posta veya şifre hatalı. Lütfen tekrar deneyin.')
+      return
+    }
     navigate('/')
   }
 

@@ -16,17 +16,34 @@ export interface TestLog {
 }
 
 // Local fallback storage when Supabase is not configured
-const localLogs: TestLog[] = []
+const LOCAL_LOGS_KEY = 'epinfy_test_logs'
+
+function getLocalLogs(): TestLog[] {
+  try {
+    const stored = localStorage.getItem(LOCAL_LOGS_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+function saveLocalLogs(logs: TestLog[]): void {
+  localStorage.setItem(LOCAL_LOGS_KEY, JSON.stringify(logs))
+}
 
 export async function insertTestLog(log: Omit<TestLog, 'id' | 'created_at'>): Promise<void> {
   if (supabase) {
     const { error } = await supabase.from('test_logs').insert([log])
     if (error) {
       console.error('Supabase insert error:', error)
-      localLogs.push({ ...log, id: localLogs.length + 1, created_at: new Date().toISOString() })
+      const logs = getLocalLogs()
+      logs.push({ ...log, id: logs.length + 1, created_at: new Date().toISOString() })
+      saveLocalLogs(logs)
     }
   } else {
-    localLogs.push({ ...log, id: localLogs.length + 1, created_at: new Date().toISOString() })
+    const logs = getLocalLogs()
+    logs.push({ ...log, id: logs.length + 1, created_at: new Date().toISOString() })
+    saveLocalLogs(logs)
   }
 }
 
@@ -38,9 +55,9 @@ export async function fetchTestLogs(): Promise<TestLog[]> {
       .order('created_at', { ascending: false })
     if (error) {
       console.error('Supabase error:', error)
-      return localLogs
+      return getLocalLogs()
     }
     return data || []
   }
-  return localLogs
+  return getLocalLogs()
 }
