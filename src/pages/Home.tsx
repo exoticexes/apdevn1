@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import ProductCard from '../components/ProductCard'
 import Toast from '../components/Toast'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 const products = [
   {
@@ -69,11 +69,19 @@ export default function Home() {
   const { addToCart } = useCart()
   const navigate = useNavigate()
   const [showToast, setShowToast] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   const handleAddToCart = (product: typeof products[0]) => {
     if (!isAuthenticated) {
       setShowToast(true)
-      setTimeout(() => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => {
         navigate('/register')
       }, 1500)
       return
