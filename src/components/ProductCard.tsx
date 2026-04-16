@@ -18,7 +18,7 @@ export default function ProductCard({ name, price, image, description, featured,
       }`}
     >
       {/* Image */}
-      <div className={`relative overflow-hidden ${featured ? 'h-72' : 'h-48'}`}>
+      <div className={`relative overflow-hidden ${featured ? 'h-48 sm:h-56 md:h-72' : 'h-48'}`}>
         <img
           src={image}
           alt={name}
@@ -38,7 +38,7 @@ export default function ProductCard({ name, price, image, description, featured,
 
       {/* Content */}
       <div className="p-5">
-        <h3 className={`font-extrabold text-white ${featured ? 'text-2xl' : 'text-lg'} mb-1`}>
+        <h3 className={`font-extrabold text-white ${featured ? 'text-xl sm:text-2xl' : 'text-lg'} mb-1`}>
           {name}
         </h3>
         <p className="text-gray-400 text-sm font-bold mb-4">{description}</p>
