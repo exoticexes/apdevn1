@@ -52,8 +52,8 @@ export async function clearTestLogs(): Promise<void> {
     const { error } = await supabase.from('test_logs').delete().neq('id', 0)
     if (error) {
       console.error('Supabase delete error:', error)
-      saveLocalLogs([])
     }
+    saveLocalLogs([])
   } else {
     saveLocalLogs([])
   }
