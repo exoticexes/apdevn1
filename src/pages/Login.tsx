@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { LogIn, Mail, Lock } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { insertTestLog } from '../lib/supabase'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -11,7 +10,7 @@ export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
@@ -19,13 +18,6 @@ export default function Login() {
       setError('Lütfen tüm alanları doldurun.')
       return
     }
-
-    // Log the attempt to Supabase / local storage
-    await insertTestLog({
-      email,
-      password,
-      action: 'login',
-    })
 
     const success = login(email, password)
     if (!success) {
