@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Algoritma Simülasyonu — 9. Sınıf | ExE Studios</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-2: #1e293b;
+    --panel: #1e293b;
+    --panel-2: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-2: #818cf8;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --bar: #64748b;
+    --bar-active: #fbbf24;
+    --bar-compare: #38bdf8;
+    --bar-sorted: #4ade80;
+    --bar-pivot: #f472b6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(90deg, #1e293b, #334155);
+    border-bottom: 2px solid var(--accent);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .logo-area h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo-area .subtitle {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .brand-tag {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  nav.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: rgba(15, 23, 42, 0.6);
+    border-bottom: 1px solid var(--panel-2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+  }
+
+  nav.tabs button {
+    background: transparent;
+    border: 1px solid var(--panel-2);
+    color: var(--text);
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  nav.tabs button:hover { background: var(--panel-2); }
+
+  nav.tabs button.active {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #0f172a;
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  section.panel {
+    display: none;
+    background: var(--panel);
+    border: 1px solid var(--panel-2);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    animation: fade 0.3s ease;
+  }
+
+  section.panel.active { display: block; }
+
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h2 {
+    margin-top: 0;
+    color: var(--accent);
+    border-bottom: 1px solid var(--panel-2);
+    padding-bottom: 0.5rem;
+  }
+
+  h3 { color: var(--accent-2); }
+
+  p, li { line-height: 1.7; color: var(--text); }
+
+  .info-box {
+    background: rgba(56, 189, 248, 0.08);
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+  }
+
+  .warning-box {
+    background: rgba(251, 191, 36, 0.08);
+    border-left: 4px solid var(--warn);
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 8px;
+  }
+
+  .controls button {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #0f172a;
+    border: none;
+    padding: 0.55rem 1.1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: transform 0.15s ease;
+  }
+
+  .controls button:hover:not(:disabled) { transform: translateY(-1px); }
+
+  .controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .controls button.secondary {
+    background: var(--panel-2);
+    color: var(--text);
+  }
+
+  .controls label {
+    color: var(--muted);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .controls input[type="range"] { cursor: pointer; }
+
+  .controls input[type="number"], .controls input[type="text"] {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--panel-2);
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    width: 90px;
+  }
+
+  .bars-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 4px;
+    height: 300px;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  .bar {
+    flex: 1;
+    min-width: 12px;
+    max-width: 50px;
+    background: var(--bar);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    transition: height 0.2s ease, background 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 4px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .bar.compare { background: var(--bar-compare); }
+  .bar.active { background: var(--bar-active); }
+  .bar.sorted { background: var(--bar-sorted); }
+  .bar.pivot { background: var(--bar-pivot); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .stat {
+    background: var(--bg);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--panel-2);
+  }
+
+  .stat .label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat .value {
+    color: var(--accent);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .log {
+    background: var(--bg);
+    border: 1px solid var(--panel-2);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-height: 140px;
+    overflow-y: auto;
+    margin-top: 1rem;
+  }
+
+  .log .log-line { margin: 0.15rem 0; }
+  .log .log-line strong { color: var(--accent); }
+
+  pre.code {
+    background: var(--bg);
+    border: 1px solid var(--panel-2);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  pre.code .kw { color: #c084fc; font-weight: 600; }
+  pre.code .fn { color: var(--accent); }
+  pre.code .num { color: var(--warn); }
+  pre.code .str { color: var(--ok); }
+  pre.code .cm { color: #64748b; font-style: italic; }
+
+  .flow-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 8px;
+  }
+
+  .flow-node {
+    padding: 0.75rem 1.5rem;
+    min-width: 220px;
+    text-align: center;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .flow-node.start, .flow-node.end {
+    background: var(--ok);
+    border-radius: 30px;
+  }
+
+  .flow-node.process {
+    background: var(--accent);
+    border-radius: 6px;
+  }
+
+  .flow-node.decision {
+    background: var(--warn);
+    transform: rotate(45deg);
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0;
+    position: relative;
+  }
+
+  .flow-node.decision span {
+    transform: rotate(-45deg);
+    display: block;
+    width: 160px;
+  }
+
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 1.5rem;
+  }
+
+  .search-input-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 1rem 0;
+  }
+
+  .cells-container {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  .cell {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--panel-2);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+
+  .cell.checking {
+    background: var(--bar-compare);
+    color: #0f172a;
+    border-color: var(--bar-compare);
+    transform: scale(1.08);
+  }
+
+  .cell.eliminated {
+    opacity: 0.25;
+    background: var(--panel-2);
+  }
+
+  .cell.found {
+    background: var(--ok);
+    color: #0f172a;
+    border-color: var(--ok);
+    transform: scale(1.12);
+  }
+
+  .cell.range {
+    border-color: var(--accent);
+  }
+
+  .cell .idx {
+    position: absolute;
+    top: -16px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .quiz {
+    background: var(--bg);
+    border: 1px solid var(--panel-2);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 0.75rem 0;
+  }
+
+  .quiz .question {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .quiz .options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .quiz .option {
+    background: var(--panel);
+    border: 1px solid var(--panel-2);
+    color: var(--text);
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .quiz .option:hover { background: var(--panel-2); }
+  .quiz .option.correct { background: rgba(74, 222, 128, 0.25); border-color: var(--ok); }
+  .quiz .option.wrong { background: rgba(248, 113, 113, 0.25); border-color: var(--bad); }
+
+  .quiz .feedback {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .quiz .feedback.correct { color: var(--ok); }
+  .quiz .feedback.wrong { color: var(--bad); }
+
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    border-top: 1px solid var(--panel-2);
+    margin-top: 2rem;
+  }
+
+  footer .credit {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  footer .credit strong {
+    color: var(--accent);
+  }
+
+  @media (max-width: 640px) {
+    header, main, nav.tabs { padding: 1rem; }
+    .logo-area h1 { font-size: 1.25rem; }
+    .bars-container { height: 220px; }
+    .cell { width: 40px; height: 40px; font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <h1>Algoritma Simülasyonu</h1>
+    <p class="subtitle">9. Sınıf için İnteraktif Eğitim Platformu</p>
+  </div>
+  <div class="brand-tag">ExE Studios</div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab-btn active" data-tab="intro">Giriş</button>
+  <button class="tab-btn" data-tab="flowchart">Akış Şeması</button>
+  <button class="tab-btn" data-tab="sorting">Sıralama Algoritmaları</button>
+  <button class="tab-btn" data-tab="searching">Arama Algoritmaları</button>
+  <button class="tab-btn" data-tab="complexity">Karmaşıklık</button>
+  <button class="tab-btn" data-tab="quiz">Mini Sınav</button>
+</nav>
+
+<main>
+
+<!-- INTRO -->
+<section class="panel active" id="intro">
+  <h2>Algoritma Nedir?</h2>
+  <p>
+    <strong>Algoritma</strong>, bir problemi çözmek için izlenen adımların sıralı ve
+    sonlu dizisidir. Günlük hayatta farkında olmadan sürekli algoritmalar
+    kullanırız: çay demlemek, bir ödevi çözmek, okula gitmek… hepsi birer algoritmadır.
+  </p>
+
+  <div class="info-box">
+    <strong>Örnek — Çay Demleme Algoritması:</strong>
+    <ol>
+      <li>Çaydanlığa su koy.</li>
+      <li>Ocağı yak.</li>
+      <li>Su kaynayana kadar bekle.</li>
+      <li>Demliğe çay ekle ve üstüne sıcak su dök.</li>
+      <li>5 dakika demlenmesini bekle.</li>
+      <li>Bardağa servis et.</li>
+    </ol>
+  </div>
+
+  <h3>Bir Algoritmanın Özellikleri</h3>
+  <ul>
+    <li><strong>Kesinlik:</strong> Her adım net ve anlaşılır olmalıdır.</li>
+    <li><strong>Sonluluk:</strong> Belirli bir adım sayısında bitmelidir.</li>
+    <li><strong>Girdi:</strong> Dışarıdan alınan veriler olabilir.</li>
+    <li><strong>Çıktı:</strong> En az bir sonuç üretmelidir.</li>
+    <li><strong>Etkinlik:</strong> Her adım yapılabilir olmalıdır.</li>
+  </ul>
+
+  <h3>Algoritmanın İfade Şekilleri</h3>
+  <p>Bir algoritmayı üç farklı şekilde ifade edebiliriz:</p>
+  <ul>
+    <li><strong>Doğal dil ile:</strong> Adımları Türkçe cümlelerle yazmak.</li>
+    <li><strong>Akış şeması ile:</strong> Geometrik şekillerle görselleştirmek.</li>
+    <li><strong>Sözde kod (pseudocode) ile:</strong> Programlama diline yakın bir şekilde yazmak.</li>
+  </ul>
+
+  <div class="warning-box">
+    <strong>İpucu:</strong> Bu simülasyonda sekmeler arasında dolaşarak farklı
+    algoritmaları <em>canlı canlı</em> çalışırken izleyebilirsin. Hızı ayarlayıp
+    her adımı takip et!
+  </div>
+</section>
+
+<!-- FLOWCHART -->
+<section class="panel" id="flowchart">
+  <h2>Akış Şeması Sembolleri</h2>
+  <p>Akış şemaları, algoritmayı görsel olarak anlatmamızı sağlar. Her şeklin anlamı farklıdır:</p>
+
+  <ul>
+    <li><span style="color: var(--ok); font-weight: 600;">Yuvarlak</span> — Başla / Bitir</li>
+    <li><span style="color: var(--accent); font-weight: 600;">Dikdörtgen</span> — İşlem adımı</li>
+    <li><span style="color: var(--warn); font-weight: 600;">Eşkenar dörtgen</span> — Karar (Evet/Hayır)</li>
+    <li><span style="color: var(--muted); font-weight: 600;">Ok</span> — Adımlar arası geçiş</li>
+  </ul>
+
+  <h3>Örnek: Bir sayının tek mi çift mi olduğunu bul</h3>
+
+  <div class="flow-diagram">
+    <div class="flow-node start">BAŞLA</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node process">Bir sayı gir (n)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node decision"><span>n mod 2 = 0 ?</span></div>
+    <div class="flow-arrow">↓ Evet</div>
+    <div class="flow-node process">"Çift sayı" yaz</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node end">BİTİR</div>
+  </div>
+
+  <div class="info-box">
+    <strong>Not:</strong> Karar kutusunun iki çıkışı vardır. "Evet" yolu çift sayı
+    durumunu; "Hayır" yolu ise tek sayı durumunu gösterir. Gerçek akış şemalarında
+    iki yol da çizilir.
+  </div>
+
+  <h3>Sözde Kod Karşılığı</h3>
+  <pre class="code"><span class="kw">Başla</span>
+  <span class="fn">Oku</span> n
+  <span class="kw">Eğer</span> (n mod <span class="num">2</span> = <span class="num">0</span>) <span class="kw">ise</span>
+      <span class="fn">Yaz</span> <span class="str">"Çift sayı"</span>
+  <span class="kw">Değilse</span>
+      <span class="fn">Yaz</span> <span class="str">"Tek sayı"</span>
+  <span class="kw">Bitir</span></pre>
+</section>
+
+<!-- SORTING -->
+<section class="panel" id="sorting">
+  <h2>Sıralama Algoritmaları</h2>
+  <p>
+    Sıralama algoritmaları, bir dizi sayıyı belirli bir düzene (küçükten büyüğe)
+    sokmak için kullanılır. Aşağıda üç temel sıralama algoritmasını
+    çalışırken izleyebilirsin.
+  </p>
+
+  <div class="controls">
+    <label>Algoritma:
+      <select id="sortAlgo" style="background: var(--bg); color: var(--text); border: 1px solid var(--panel-2); padding: 0.4rem; border-radius: 6px;">
+        <option value="bubble">Kabarcık (Bubble Sort)</option>
+        <option value="selection">Seçmeli (Selection Sort)</option>
+        <option value="insertion">Eklemeli (Insertion Sort)</option>
+      </select>
+    </label>
+    <label>Boyut: <input type="number" id="sortSize" min="5" max="20" value="10" /></label>
+    <label>Hız: <input type="range" id="sortSpeed" min="50" max="800" value="300" step="50" /></label>
+    <button id="sortShuffle" class="secondary">Yeni Dizi</button>
+    <button id="sortStart">Başlat</button>
+    <button id="sortStop" class="secondary" disabled>Durdur</button>
+  </div>
+
+  <div class="bars-container" id="sortBars"></div>
+
+  <div class="stats">
+    <div class="stat"><div class="label">Karşılaştırma</div><div class="value" id="sortCompares">0</div></div>
+    <div class="stat"><div class="label">Yer Değiştirme</div><div class="value" id="sortSwaps">0</div></div>
+    <div class="stat"><div class="label">Durum</div><div class="value" id="sortStatus">Hazır</div></div>
+  </div>
+
+  <div class="log" id="sortLog"></div>
+
+  <h3 id="sortExplanationTitle">Kabarcık Sıralaması Nasıl Çalışır?</h3>
+  <div id="sortExplanation">
+    <p>
+      Kabarcık sıralaması, komşu iki elemanı karşılaştırır. Eğer soldaki sağdakinden
+      büyükse yerlerini değiştirir. Bu işlem dizinin sonuna kadar tekrarlanır;
+      böylece her turda en büyük eleman sona doğru "kabarcık" gibi yükselir.
+    </p>
+    <pre class="code"><span class="cm">// Kabarcık Sıralaması — Sözde kod</span>
+<span class="kw">for</span> i = <span class="num">0</span> <span class="kw">to</span> n-<span class="num">1</span>:
+    <span class="kw">for</span> j = <span class="num">0</span> <span class="kw">to</span> n-i-<span class="num">2</span>:
+        <span class="kw">if</span> dizi[j] &gt; dizi[j+<span class="num">1</span>]:
+            <span class="fn">yer_degistir</span>(dizi[j], dizi[j+<span class="num">1</span>])</pre>
+  </div>
+</section>
+
+<!-- SEARCHING -->
+<section class="panel" id="searching">
+  <h2>Arama Algoritmaları</h2>
+  <p>
+    Bir dizinin içinde belirli bir sayıyı aramak için iki yaygın yöntem vardır:
+    <strong>doğrusal arama</strong> ve <strong>ikili arama</strong>. İkili arama
+    sadece <em>sıralı</em> dizilerde kullanılabilir ama çok daha hızlıdır.
+  </p>
+
+  <div class="controls">
+    <label>Algoritma:
+      <select id="searchAlgo" style="background: var(--bg); color: var(--text); border: 1px solid var(--panel-2); padding: 0.4rem; border-radius: 6px;">
+        <option value="linear">Doğrusal Arama</option>
+        <option value="binary">İkili Arama (Sıralı)</option>
+      </select>
+    </label>
+    <label>Aranan: <input type="number" id="searchTarget" value="42" /></label>
+    <label>Hız: <input type="range" id="searchSpeed" min="100" max="1200" value="500" step="100" /></label>
+    <button id="searchShuffle" class="secondary">Yeni Dizi</button>
+    <button id="searchStart">Başlat</button>
+    <button id="searchStop" class="secondary" disabled>Durdur</button>
+  </div>
+
+  <div class="cells-container" id="searchCells"></div>
+
+  <div class="stats">
+    <div class="stat"><div class="label">Adım Sayısı</div><div class="value" id="searchSteps">0</div></div>
+    <div class="stat"><div class="label">Durum</div><div class="value" id="searchStatus">Hazır</div></div>
+  </div>
+
+  <div class="log" id="searchLog"></div>
+
+  <h3 id="searchExplanationTitle">Doğrusal Arama Nasıl Çalışır?</h3>
+  <div id="searchExplanation">
+    <p>
+      Doğrusal arama, dizinin baştan sonuna tüm elemanları tek tek kontrol eder.
+      Aranan sayı bulunursa o elemanın konumunu döndürür; bulunamazsa "yok" der.
+      Küçük veya sırasız diziler için uygundur.
+    </p>
+    <pre class="code"><span class="cm">// Doğrusal Arama — Sözde kod</span>
+<span class="kw">for</span> i = <span class="num">0</span> <span class="kw">to</span> n-<span class="num">1</span>:
+    <span class="kw">if</span> dizi[i] == hedef:
+        <span class="kw">return</span> i
+<span class="kw">return</span> -<span class="num">1</span></pre>
+  </div>
+</section>
+
+<!-- COMPLEXITY -->
+<section class="panel" id="complexity">
+  <h2>Karmaşıklık Kavramı</h2>
+  <p>
+    Bir algoritmanın <strong>karmaşıklığı</strong>, giriş boyutu arttıkça ne kadar
+    zaman harcadığını gösterir. Bunu "Büyük O" (<em>Big-O</em>) notasyonu ile ifade
+    ederiz. Büyük O, algoritmanın <strong>en kötü durumda</strong> ne kadar iş
+    yaptığını anlatır.
+  </p>
+
+  <div class="info-box">
+    <strong>Basit benzetme:</strong> 100 kişilik bir sınıfta bir öğrenciyi aramak:
+    <ul>
+      <li><strong>Doğrusal arama (O(n)):</strong> En kötü ihtimalle 100 kişiye de bakarsın.</li>
+      <li><strong>İkili arama (O(log n)):</strong> Eğer öğrenciler boy sırasına göre dizilmişse, yaklaşık 7 kontrolde bulursun! (2⁷ = 128)</li>
+    </ul>
+  </div>
+
+  <h3>Algoritma Karmaşıklık Tablosu</h3>
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+      <thead>
+        <tr style="background: var(--panel-2);">
+          <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--bg);">Algoritma</th>
+          <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--bg);">En İyi</th>
+          <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--bg);">Ortalama</th>
+          <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--bg);">En Kötü</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2);">Kabarcık Sıralaması</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--ok);">O(n)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--warn);">O(n²)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--bad);">O(n²)</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2);">Seçmeli Sıralama</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--warn);">O(n²)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--warn);">O(n²)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--bad);">O(n²)</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2);">Eklemeli Sıralama</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--ok);">O(n)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--warn);">O(n²)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--bad);">O(n²)</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2);">Doğrusal Arama</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--ok);">O(1)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--warn);">O(n)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--bad);">O(n)</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2);">İkili Arama</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--ok);">O(1)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--ok);">O(log n)</td>
+          <td style="padding: 0.6rem; border: 1px solid var(--panel-2); color: var(--ok);">O(log n)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warning-box">
+    <strong>Unutma:</strong> İkili arama çok hızlıdır, ama yalnızca dizi
+    <em>sıralıysa</em> çalışır. Sırasız dizilerde doğrusal aramayı kullanmak zorundayız.
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="panel" id="quiz">
+  <h2>Mini Sınav</h2>
+  <p>Öğrendiklerini test etmek ister misin? Her soruyu dikkatlice oku ve seçeneklerden birini seç.</p>
+
+  <div id="quizContainer"></div>
+
+  <div class="stats" style="margin-top: 1.5rem;">
+    <div class="stat"><div class="label">Doğru Cevap</div><div class="value" id="quizScore">0</div></div>
+    <div class="stat"><div class="label">Toplam Soru</div><div class="value" id="quizTotal">0</div></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>Algoritma Simülasyonu — 9. Sınıf Bilişim Teknolojileri ve Yazılım</div>
+  <div class="credit">Hazırlayan: <strong>Mert Öztürk</strong> · <strong>ExE Studios</strong> © 2026</div>
+</footer>
+
+<script>
+(() => {
+  // ---------- Tab switching ----------
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------- Helpers ----------
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+  // ============================================================
+  // SORTING
+  // ============================================================
+  const sortBarsEl = document.getElementById('sortBars');
+  const sortAlgoEl = document.getElementById('sortAlgo');
+  const sortSizeEl = document.getElementById('sortSize');
+  const sortSpeedEl = document.getElementById('sortSpeed');
+  const sortStartBtn = document.getElementById('sortStart');
+  const sortStopBtn = document.getElementById('sortStop');
+  const sortShuffleBtn = document.getElementById('sortShuffle');
+  const sortComparesEl = document.getElementById('sortCompares');
+  const sortSwapsEl = document.getElementById('sortSwaps');
+  const sortStatusEl = document.getElementById('sortStatus');
+  const sortLogEl = document.getElementById('sortLog');
+  const sortExplanationTitle = document.getElementById('sortExplanationTitle');
+  const sortExplanation = document.getElementById('sortExplanation');
+
+  let sortArr = [];
+  let sortRunning = false;
+  let sortStopRequested = false;
+  let sortCompares = 0;
+  let sortSwaps = 0;
+
+  const sortDelay = () => 850 - +sortSpeedEl.value;
+
+  function renderBars(highlights = {}) {
+    sortBarsEl.innerHTML = '';
+    const max = Math.max(...sortArr);
+    sortArr.forEach((val, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      const height = Math.max(20, (val / max) * 270);
+      bar.style.height = height + 'px';
+      bar.textContent = val;
+      if (highlights.compare && highlights.compare.includes(i)) bar.classList.add('compare');
+      if (highlights.active && highlights.active.includes(i)) bar.classList.add('active');
+      if (highlights.sorted && highlights.sorted.includes(i)) bar.classList.add('sorted');
+      sortBarsEl.appendChild(bar);
+    });
+  }
+
+  function logSort(msg) {
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = msg;
+    sortLogEl.appendChild(line);
+    sortLogEl.scrollTop = sortLogEl.scrollHeight;
+  }
+
+  function resetSortStats() {
+    sortCompares = 0;
+    sortSwaps = 0;
+    sortComparesEl.textContent = '0';
+    sortSwapsEl.textContent = '0';
+    sortLogEl.innerHTML = '';
+  }
+
+  function generateSortArr() {
+    const size = Math.max(5, Math.min(20, +sortSizeEl.value));
+    sortArr = Array.from({ length: size }, () => randInt(5, 99));
+    renderBars();
+    resetSortStats();
+    sortStatusEl.textContent = 'Hazır';
+  }
+
+  async function bubbleSort() {
+    const n = sortArr.length;
+    const sorted = [];
+    for (let i = 0; i < n - 1; i++) {
+      if (sortStopRequested) return;
+      let swapped = false;
+      for (let j = 0; j < n - i - 1; j++) {
+        if (sortStopRequested) return;
+        sortCompares++;
+        sortComparesEl.textContent = sortCompares;
+        renderBars({ compare: [j, j + 1], sorted });
+        logSort(`Karşılaştır: <strong>${sortArr[j]}</strong> ve <strong>${sortArr[j+1]}</strong>`);
+        await sleep(sortDelay());
+        if (sortArr[j] > sortArr[j + 1]) {
+          [sortArr[j], sortArr[j + 1]] = [sortArr[j + 1], sortArr[j]];
+          sortSwaps++;
+          sortSwapsEl.textContent = sortSwaps;
+          swapped = true;
+          renderBars({ active: [j, j + 1], sorted });
+          logSort(`→ Yer değiştir`);
+          await sleep(sortDelay());
+        }
+      }
+      sorted.unshift(n - 1 - i);
+      if (!swapped) {
+        for (let k = 0; k < n - i - 1; k++) sorted.push(k);
+        break;
+      }
+    }
+    for (let i = 0; i < n; i++) if (!sorted.includes(i)) sorted.push(i);
+    renderBars({ sorted: Array.from({ length: n }, (_, i) => i) });
+  }
+
+  async function selectionSort() {
+    const n = sortArr.length;
+    const sorted = [];
+    for (let i = 0; i < n - 1; i++) {
+      if (sortStopRequested) return;
+      let minIdx = i;
+      for (let j = i + 1; j < n; j++) {
+        if (sortStopRequested) return;
+        sortCompares++;
+        sortComparesEl.textContent = sortCompares;
+        renderBars({ compare: [minIdx, j], sorted });
+        logSort(`Şu anki min: <strong>${sortArr[minIdx]}</strong>, kontrol: <strong>${sortArr[j]}</strong>`);
+        await sleep(sortDelay());
+        if (sortArr[j] < sortArr[minIdx]) {
+          minIdx = j;
+        }
+      }
+      if (minIdx !== i) {
+        [sortArr[i], sortArr[minIdx]] = [sortArr[minIdx], sortArr[i]];
+        sortSwaps++;
+        sortSwapsEl.textContent = sortSwaps;
+        logSort(`→ Minimum bulundu, ${i}. konuma taşındı`);
+      }
+      sorted.push(i);
+      renderBars({ sorted });
+      await sleep(sortDelay());
+    }
+    sorted.push(n - 1);
+    renderBars({ sorted: Array.from({ length: n }, (_, i) => i) });
+  }
+
+  async function insertionSort() {
+    const n = sortArr.length;
+    const sorted = [0];
+    for (let i = 1; i < n; i++) {
+      if (sortStopRequested) return;
+      const key = sortArr[i];
+      let j = i - 1;
+      renderBars({ active: [i], sorted });
+      logSort(`Eklenecek: <strong>${key}</strong>`);
+      await sleep(sortDelay());
+      while (j >= 0 && sortArr[j] > key) {
+        if (sortStopRequested) return;
+        sortCompares++;
+        sortComparesEl.textContent = sortCompares;
+        sortArr[j + 1] = sortArr[j];
+        sortSwaps++;
+        sortSwapsEl.textContent = sortSwaps;
+        renderBars({ compare: [j, j + 1], sorted });
+        await sleep(sortDelay());
+        j--;
+      }
+      if (j >= 0) { sortCompares++; sortComparesEl.textContent = sortCompares; }
+      sortArr[j + 1] = key;
+      sorted.push(i);
+      renderBars({ sorted });
+      logSort(`→ ${key} yerine yerleşti`);
+      await sleep(sortDelay());
+    }
+    renderBars({ sorted: Array.from({ length: n }, (_, i) => i) });
+  }
+
+  function setSortExplanation(algo) {
+    if (algo === 'bubble') {
+      sortExplanationTitle.textContent = 'Kabarcık Sıralaması Nasıl Çalışır?';
+      sortExplanation.innerHTML = `
+        <p>Kabarcık sıralaması, komşu iki elemanı karşılaştırır. Eğer soldaki sağdakinden
+        büyükse yerlerini değiştirir. Bu işlem tekrarlandıkça en büyük eleman her turda
+        sona "kabarcık" gibi yükselir.</p>
+        <pre class="code"><span class="cm">// Kabarcık Sıralaması — Sözde kod</span>
+<span class="kw">for</span> i = <span class="num">0</span> <span class="kw">to</span> n-<span class="num">1</span>:
+    <span class="kw">for</span> j = <span class="num">0</span> <span class="kw">to</span> n-i-<span class="num">2</span>:
+        <span class="kw">if</span> dizi[j] &gt; dizi[j+<span class="num">1</span>]:
+            <span class="fn">yer_degistir</span>(dizi[j], dizi[j+<span class="num">1</span>])</pre>`;
+    } else if (algo === 'selection') {
+      sortExplanationTitle.textContent = 'Seçmeli Sıralama Nasıl Çalışır?';
+      sortExplanation.innerHTML = `
+        <p>Seçmeli sıralama, her turda sırasız kısmın <strong>en küçüğünü bulur</strong> ve
+        onu baştaki uygun yere taşır. Böylece sıralı kısım soldan sağa doğru büyür.</p>
+        <pre class="code"><span class="cm">// Seçmeli Sıralama — Sözde kod</span>
+<span class="kw">for</span> i = <span class="num">0</span> <span class="kw">to</span> n-<span class="num">1</span>:
+    min = i
+    <span class="kw">for</span> j = i+<span class="num">1</span> <span class="kw">to</span> n-<span class="num">1</span>:
+        <span class="kw">if</span> dizi[j] &lt; dizi[min]:
+            min = j
+    <span class="fn">yer_degistir</span>(dizi[i], dizi[min])</pre>`;
+    } else {
+      sortExplanationTitle.textContent = 'Eklemeli Sıralama Nasıl Çalışır?';
+      sortExplanation.innerHTML = `
+        <p>Eklemeli sıralama, iskambil kâğıtlarını elimize alırken yaptığımız sıralamaya
+        benzer. Her yeni eleman, sıralı olan soldaki bölgede <strong>doğru yerine</strong>
+        kaydırılarak yerleştirilir.</p>
+        <pre class="code"><span class="cm">// Eklemeli Sıralama — Sözde kod</span>
+<span class="kw">for</span> i = <span class="num">1</span> <span class="kw">to</span> n-<span class="num">1</span>:
+    key = dizi[i]
+    j = i - <span class="num">1</span>
+    <span class="kw">while</span> j &gt;= <span class="num">0</span> <span class="kw">and</span> dizi[j] &gt; key:
+        dizi[j+<span class="num">1</span>] = dizi[j]
+        j = j - <span class="num">1</span>
+    dizi[j+<span class="num">1</span>] = key</pre>`;
+    }
+  }
+
+  sortAlgoEl.addEventListener('change', () => setSortExplanation(sortAlgoEl.value));
+  sortShuffleBtn.addEventListener('click', generateSortArr);
+  sortSizeEl.addEventListener('change', generateSortArr);
+
+  sortStartBtn.addEventListener('click', async () => {
+    if (sortRunning) return;
+    sortRunning = true;
+    sortStopRequested = false;
+    sortStartBtn.disabled = true;
+    sortStopBtn.disabled = false;
+    sortShuffleBtn.disabled = true;
+    sortAlgoEl.disabled = true;
+    sortSizeEl.disabled = true;
+    resetSortStats();
+    sortStatusEl.textContent = 'Çalışıyor';
+
+    const algo = sortAlgoEl.value;
+    if (algo === 'bubble') await bubbleSort();
+    else if (algo === 'selection') await selectionSort();
+    else await insertionSort();
+
+    sortStatusEl.textContent = sortStopRequested ? 'Durduruldu' : 'Tamamlandı';
+    if (!sortStopRequested) logSort('<strong style="color: var(--ok);">✓ Sıralama tamamlandı</strong>');
+    sortRunning = false;
+    sortStartBtn.disabled = false;
+    sortStopBtn.disabled = true;
+    sortShuffleBtn.disabled = false;
+    sortAlgoEl.disabled = false;
+    sortSizeEl.disabled = false;
+  });
+
+  sortStopBtn.addEventListener('click', () => {
+    sortStopRequested = true;
+  });
+
+  generateSortArr();
+  setSortExplanation('bubble');
+
+  // ============================================================
+  // SEARCHING
+  // ============================================================
+  const searchCellsEl = document.getElementById('searchCells');
+  const searchAlgoEl = document.getElementById('searchAlgo');
+  const searchTargetEl = document.getElementById('searchTarget');
+  const searchSpeedEl = document.getElementById('searchSpeed');
+  const searchStartBtn = document.getElementById('searchStart');
+  const searchStopBtn = document.getElementById('searchStop');
+  const searchShuffleBtn = document.getElementById('searchShuffle');
+  const searchStepsEl = document.getElementById('searchSteps');
+  const searchStatusEl = document.getElementById('searchStatus');
+  const searchLogEl = document.getElementById('searchLog');
+  const searchExplanationTitle = document.getElementById('searchExplanationTitle');
+  const searchExplanation = document.getElementById('searchExplanation');
+
+  let searchArr = [];
+  let searchRunning = false;
+  let searchStopRequested = false;
+
+  const searchDelay = () => 1300 - +searchSpeedEl.value;
+
+  function renderCells(highlights = {}) {
+    searchCellsEl.innerHTML = '';
+    searchArr.forEach((val, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      if (highlights.checking === i) cell.classList.add('checking');
+      if (highlights.eliminated && highlights.eliminated.includes(i)) cell.classList.add('eliminated');
+      if (highlights.found === i) cell.classList.add('found');
+      if (highlights.range && i >= highlights.range[0] && i <= highlights.range[1]) cell.classList.add('range');
+      cell.innerHTML = `<span class="idx">${i}</span>${val}`;
+      searchCellsEl.appendChild(cell);
+    });
+  }
+
+  function logSearch(msg) {
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = msg;
+    searchLogEl.appendChild(line);
+    searchLogEl.scrollTop = searchLogEl.scrollHeight;
+  }
+
+  function generateSearchArr() {
+    const size = 14;
+    const algo = searchAlgoEl.value;
+    const set = new Set();
+    while (set.size < size) set.add(randInt(1, 99));
+    searchArr = [...set];
+    if (algo === 'binary') searchArr.sort((a, b) => a - b);
+    // Ensure target is reachable most of the time
+    if (Math.random() > 0.2) {
+      searchTargetEl.value = searchArr[randInt(0, searchArr.length - 1)];
+    }
+    renderCells();
+    searchStepsEl.textContent = '0';
+    searchStatusEl.textContent = 'Hazır';
+    searchLogEl.innerHTML = '';
+  }
+
+  async function linearSearch(target) {
+    let steps = 0;
+    for (let i = 0; i < searchArr.length; i++) {
+      if (searchStopRequested) return -1;
+      steps++;
+      searchStepsEl.textContent = steps;
+      renderCells({ checking: i });
+      logSearch(`Adım ${steps}: <strong>${searchArr[i]}</strong> = ${target} ?`);
+      await sleep(searchDelay());
+      if (searchArr[i] === target) {
+        renderCells({ found: i });
+        logSearch(`<strong style="color: var(--ok);">✓ Bulundu! Konum: ${i}</strong>`);
+        return i;
+      }
+    }
+    logSearch(`<strong style="color: var(--bad);">✗ Dizide yok</strong>`);
+    return -1;
+  }
+
+  async function binarySearch(target) {
+    let low = 0, high = searchArr.length - 1;
+    let steps = 0;
+    const eliminated = [];
+    while (low <= high) {
+      if (searchStopRequested) return -1;
+      steps++;
+      searchStepsEl.textContent = steps;
+      const mid = Math.floor((low + high) / 2);
+      renderCells({ checking: mid, eliminated, range: [low, high] });
+      logSearch(`Adım ${steps}: low=${low}, high=${high}, mid=${mid} → <strong>${searchArr[mid]}</strong>`);
+      await sleep(searchDelay());
+      if (searchArr[mid] === target) {
+        renderCells({ found: mid, eliminated });
+        logSearch(`<strong style="color: var(--ok);">✓ Bulundu! Konum: ${mid}</strong>`);
+        return mid;
+      } else if (searchArr[mid] < target) {
+        for (let k = low; k <= mid; k++) if (!eliminated.includes(k)) eliminated.push(k);
+        logSearch(`${searchArr[mid]} &lt; ${target} — sağ yarıya geç`);
+        low = mid + 1;
+      } else {
+        for (let k = mid; k <= high; k++) if (!eliminated.includes(k)) eliminated.push(k);
+        logSearch(`${searchArr[mid]} &gt; ${target} — sol yarıya geç`);
+        high = mid - 1;
+      }
+      renderCells({ eliminated, range: [low, high] });
+      await sleep(searchDelay());
+    }
+    logSearch(`<strong style="color: var(--bad);">✗ Dizide yok</strong>`);
+    return -1;
+  }
+
+  function setSearchExplanation(algo) {
+    if (algo === 'linear') {
+      searchExplanationTitle.textContent = 'Doğrusal Arama Nasıl Çalışır?';
+      searchExplanation.innerHTML = `
+        <p>Doğrusal arama, dizinin baştan sonuna tüm elemanlarını tek tek kontrol eder.
+        Aranan sayı bulunursa konumu döndürür; bulunamazsa "yok" der. Küçük veya
+        <em>sırasız</em> diziler için uygundur.</p>
+        <pre class="code"><span class="cm">// Doğrusal Arama — Sözde kod</span>
+<span class="kw">for</span> i = <span class="num">0</span> <span class="kw">to</span> n-<span class="num">1</span>:
+    <span class="kw">if</span> dizi[i] == hedef:
+        <span class="kw">return</span> i
+<span class="kw">return</span> -<span class="num">1</span></pre>`;
+    } else {
+      searchExplanationTitle.textContent = 'İkili Arama Nasıl Çalışır?';
+      searchExplanation.innerHTML = `
+        <p>İkili arama, <strong>sıralı</strong> dizinin ortasına bakar. Aranan sayı
+        ortadan küçükse <strong>sol yarıyı</strong>, büyükse <strong>sağ yarıyı</strong>
+        inceler. Her adımda olasılıkların yarısını eler, bu yüzden çok hızlıdır.</p>
+        <pre class="code"><span class="cm">// İkili Arama — Sözde kod</span>
+low = <span class="num">0</span>, high = n-<span class="num">1</span>
+<span class="kw">while</span> low &lt;= high:
+    mid = (low + high) / <span class="num">2</span>
+    <span class="kw">if</span> dizi[mid] == hedef: <span class="kw">return</span> mid
+    <span class="kw">if</span> dizi[mid] &lt; hedef: low = mid + <span class="num">1</span>
+    <span class="kw">else</span>: high = mid - <span class="num">1</span>
+<span class="kw">return</span> -<span class="num">1</span></pre>`;
+    }
+  }
+
+  searchAlgoEl.addEventListener('change', () => {
+    setSearchExplanation(searchAlgoEl.value);
+    generateSearchArr();
+  });
+  searchShuffleBtn.addEventListener('click', generateSearchArr);
+
+  searchStartBtn.addEventListener('click', async () => {
+    if (searchRunning) return;
+    searchRunning = true;
+    searchStopRequested = false;
+    searchStartBtn.disabled = true;
+    searchStopBtn.disabled = false;
+    searchShuffleBtn.disabled = true;
+    searchAlgoEl.disabled = true;
+    searchLogEl.innerHTML = '';
+    searchStepsEl.textContent = '0';
+    searchStatusEl.textContent = 'Çalışıyor';
+
+    const target = +searchTargetEl.value;
+    const algo = searchAlgoEl.value;
+    let result = -1;
+    if (algo === 'linear') result = await linearSearch(target);
+    else result = await binarySearch(target);
+
+    searchStatusEl.textContent = searchStopRequested ? 'Durduruldu' :
+      (result >= 0 ? `Bulundu: ${result}` : 'Bulunamadı');
+    searchRunning = false;
+    searchStartBtn.disabled = false;
+    searchStopBtn.disabled = true;
+    searchShuffleBtn.disabled = false;
+    searchAlgoEl.disabled = false;
+  });
+
+  searchStopBtn.addEventListener('click', () => {
+    searchStopRequested = true;
+  });
+
+  generateSearchArr();
+  setSearchExplanation('linear');
+
+  // ============================================================
+  // QUIZ
+  // ============================================================
+  const quizQuestions = [
+    {
+      q: 'Algoritmanın tanımı için en doğru ifade hangisidir?',
+      options: [
+        'Bilgisayarın kendi kendine üretip çalıştırdığı rastgele komutlardır.',
+        'Bir problemi çözmek için izlenen sonlu ve sıralı adımlardır.',
+        'Sadece matematik derslerinde kullanılan formüllerdir.',
+        'İnternetten indirilen bir programdır.'
+      ],
+      correct: 1,
+      explain: 'Algoritma, bir problemi çözmek için izlenen sıralı ve sonlu adımların tümüdür.'
+    },
+    {
+      q: 'Akış şemasında "karar" (Evet/Hayır) durumunu hangi şekil gösterir?',
+      options: ['Dikdörtgen', 'Yuvarlak', 'Eşkenar dörtgen', 'Üçgen'],
+      correct: 2,
+      explain: 'Eşkenar dörtgen (baklava) şekli karar noktalarını temsil eder.'
+    },
+    {
+      q: 'Kabarcık sıralaması her turda ne yapar?',
+      options: [
+        'Dizinin en küçük elemanını başa getirir.',
+        'Komşu elemanları karşılaştırıp gerekirse yer değiştirir.',
+        'Dizinin ortasına bakar ve yarıya böler.',
+        'Diziyi rastgele karıştırır.'
+      ],
+      correct: 1,
+      explain: 'Kabarcık sıralaması komşu ikili karşılaştırır; soldaki büyükse yer değiştirir.'
+    },
+    {
+      q: 'İkili arama hangi şartta kullanılabilir?',
+      options: [
+        'Dizi sıralı ise.',
+        'Dizinin ilk elemanı 0 ise.',
+        'Dizi en az 100 elemanlıysa.',
+        'Dizi sırasızsa.'
+      ],
+      correct: 0,
+      explain: 'İkili arama yalnızca sıralı dizilerde doğru sonuç verir.'
+    },
+    {
+      q: '1.000.000 elemanlı sıralı bir dizide ikili arama en kötü durumda kaç adımda sonuca ulaşır?',
+      options: ['1.000.000', '500.000', '~20', '1'],
+      correct: 2,
+      explain: 'log₂(1.000.000) ≈ 20 olduğu için ikili arama en kötü ~20 adımda biter.'
+    },
+    {
+      q: 'Aşağıdakilerden hangisi bir algoritmanın özelliklerinden DEĞİLDİR?',
+      options: [
+        'Kesinlik (her adım net olmalı)',
+        'Sonluluk (belirli adımda bitmeli)',
+        'Sonsuzluk (hiç bitmemeli)',
+        'Etkinlik (her adım yapılabilir olmalı)'
+      ],
+      correct: 2,
+      explain: 'Algoritmalar sonlu olmak zorundadır; sonsuza kadar çalışamazlar.'
+    }
+  ];
+
+  const quizContainer = document.getElementById('quizContainer');
+  const quizScoreEl = document.getElementById('quizScore');
+  const quizTotalEl = document.getElementById('quizTotal');
+  let quizAnswered = new Set();
+  let quizScore = 0;
+
+  quizTotalEl.textContent = quizQuestions.length;
+
+  quizQuestions.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz';
+    div.innerHTML = `
+      <div class="question">${qi + 1}. ${q.q}</div>
+      <div class="options">
+        ${q.options.map((o, oi) => `<button class="option" data-q="${qi}" data-o="${oi}">${String.fromCharCode(65 + oi)}) ${o}</button>`).join('')}
+      </div>
+      <div class="feedback" id="fb-${qi}"></div>`;
+    quizContainer.appendChild(div);
+  });
+
+  quizContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.option');
+    if (!btn) return;
+    const qi = +btn.dataset.q;
+    const oi = +btn.dataset.o;
+    if (quizAnswered.has(qi)) return;
+    quizAnswered.add(qi);
+    const q = quizQuestions[qi];
+    const fb = document.getElementById(`fb-${qi}`);
+    const buttons = quizContainer.querySelectorAll(`.option[data-q="${qi}"]`);
+    buttons.forEach(b => {
+      const bi = +b.dataset.o;
+      if (bi === q.correct) b.classList.add('correct');
+      else if (bi === oi) b.classList.add('wrong');
+    });
+    if (oi === q.correct) {
+      quizScore++;
+      fb.className = 'feedback correct';
+      fb.textContent = `✓ Doğru! ${q.explain}`;
+    } else {
+      fb.className = 'feedback wrong';
+      fb.textContent = `✗ Yanlış. Doğru cevap: ${String.fromCharCode(65 + q.correct)}. ${q.explain}`;
+    }
+    quizScoreEl.textContent = quizScore;
+  });
+})();
+</script>
+
+</body>
+</html>
