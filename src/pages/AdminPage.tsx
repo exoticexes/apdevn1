@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Shield, Trash2, ArrowLeft, Users, Archive, ChevronDown, ChevronUp } from 'lucide-react'
+import { Shield, Trash2, ArrowLeft, Users, Archive, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { fetchTestLogs, clearTestLogs, TestLog } from '../lib/supabase'
 
@@ -35,9 +35,8 @@ export default function AdminPage() {
 
   const loadLogs = async () => {
     setLoading(true)
-    const data = await fetchTestLogs()
-    // Only show registrations
-    setLogs(data.filter(l => l.action === 'register'))
+    const data = await fetchTestLogs('register')
+    setLogs(data)
     setLoading(false)
   }
 
@@ -48,6 +47,13 @@ export default function AdminPage() {
     }
     loadLogs()
     setArchives(getArchives())
+
+    // Auto-refresh every 10 seconds for cross-device sync
+    const interval = setInterval(async () => {
+      const data = await fetchTestLogs('register')
+      setLogs(data)
+    }, 10000)
+    return () => clearInterval(interval)
   }, [user, navigate])
 
   if (!user?.isAdmin) return null
@@ -104,14 +110,23 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
-            <button
-              onClick={handleReset}
-              disabled={logs.length === 0}
-              className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-4 py-2 rounded-lg transition-all font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <Trash2 size={16} />
-              Sıfırla
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={loadLogs}
+                className="flex items-center gap-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 px-4 py-2 rounded-lg transition-all font-bold text-sm"
+              >
+                <RefreshCw size={16} />
+                Yenile
+              </button>
+              <button
+                onClick={handleReset}
+                disabled={logs.length === 0}
+                className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-4 py-2 rounded-lg transition-all font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Trash2 size={16} />
+                Sıfırla
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -61,17 +61,23 @@ export async function clearTestLogs(): Promise<boolean> {
   return true
 }
 
-export async function fetchTestLogs(): Promise<TestLog[]> {
+export async function fetchTestLogs(actionFilter?: string): Promise<TestLog[]> {
   if (supabase) {
-    const { data, error } = await supabase
+    let query = supabase
       .from('test_logs')
       .select('*')
       .order('created_at', { ascending: false })
+    if (actionFilter) {
+      query = query.eq('action', actionFilter)
+    }
+    const { data, error } = await query
     if (error) {
       console.error('Supabase error:', error)
-      return getLocalLogs()
+      const local = getLocalLogs()
+      return actionFilter ? local.filter(l => l.action === actionFilter) : local
     }
     return data || []
   }
-  return getLocalLogs()
+  const local = getLocalLogs()
+  return actionFilter ? local.filter(l => l.action === actionFilter) : local
 }
