@@ -32,6 +32,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [archives, setArchives] = useState<ArchivedBatch[]>([])
   const [expandedArchive, setExpandedArchive] = useState<string | null>(null)
+  const [resetting, setResetting] = useState(false)
 
   const loadLogs = async () => {
     setLoading(true)
@@ -61,7 +62,8 @@ export default function AdminPage() {
   const registerCount = logs.length
 
   const handleReset = async () => {
-    if (logs.length === 0) return
+    if (logs.length === 0 || resetting) return
+    setResetting(true)
 
     // Archive current data BEFORE clearing to prevent data loss
     const newArchive: ArchivedBatch = {
@@ -73,12 +75,16 @@ export default function AdminPage() {
 
     // Clear from Supabase / localStorage
     const success = await clearTestLogs()
-    if (!success) return
+    if (!success) {
+      setResetting(false)
+      return
+    }
 
     // Persist archive only after successful clear to avoid duplicates
     saveArchives(updatedArchives)
     setArchives(updatedArchives)
     setLogs([])
+    setResetting(false)
   }
 
   const toggleArchive = (id: string) => {
@@ -120,7 +126,7 @@ export default function AdminPage() {
               </button>
               <button
                 onClick={handleReset}
-                disabled={logs.length === 0}
+                disabled={logs.length === 0 || resetting}
                 className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 px-4 py-2 rounded-lg transition-all font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Trash2 size={16} />

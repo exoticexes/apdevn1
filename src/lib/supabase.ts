@@ -73,11 +73,11 @@ export async function fetchTestLogs(actionFilter?: string): Promise<TestLog[]> {
     const { data, error } = await query
     if (error) {
       console.error('Supabase error:', error)
-      const local = getLocalLogs()
+      const local = getLocalLogs().sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
       return actionFilter ? local.filter(l => l.action === actionFilter) : local
     }
     return data || []
   }
-  const local = getLocalLogs()
+  const local = getLocalLogs().sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
   return actionFilter ? local.filter(l => l.action === actionFilter) : local
 }
